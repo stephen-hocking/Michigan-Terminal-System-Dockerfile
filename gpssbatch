@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+#
+#
+if [ ! -r "$1" ]
+then
+	echo Cant read $1
+	exit 1
+fi
+FN=/tmp/gpssbatch.$$
+GPS=`basename $1`
+#
+# Create job card deck
+#
+
+echo "\                 100113               DECK                             100110 ." > $FN
+echo '$signon ST01 TIME=1000' >> $FN
+echo ST01 >> $FN
+echo '$create' "$GPS" >> $FN
+echo '$empty' "$GPS" >> $FN
+echo '$COPY *SOURCE*' "$GPS" >> $FN
+cut -c 1-80 $GPS >> $FN
+echo '$ENDFILE' >> $FN
+echo '$run *gpss' "scards=$GPS" >> $FN
+echo '$SIGNOFF' >> $FN
+gnetcat -c 172.17.0.2 3505 < $FN
