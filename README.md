@@ -30,3 +30,5 @@ To get it running, do the following:
 To access printer output, fire up an instance of `netcat` pointed at port 1403 on either localhost or the IP address of the container. This will echo whatever's printed. Redirect it to a file as required, if you wish to save the contents.
 
 To submit jobs via the card reader, you'll need to write some simple header cards. An example is in the script `gpssbatch` which is a simple & incomplete shell script that submits gpss programs to the MTS gpss interpreter.
+
+The definitive reference can be found at [https://try-mts.com/why-try-mts/]()
