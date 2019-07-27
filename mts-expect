@@ -1,0 +1,156 @@
+#!/usr/bin/expect -f
+ 
+# Example of using expect & c3270 to start, run, and finish a tso
+# session on on Phil Robert's mvs tur(n)key 3 update system, from
+# http://www.4shared.com/file/141518509/36ad5bbe/tk3upd.html
+ 
+# NOTE WELL that this script does not 'handle' all cases, and
+# that even the ones it does may not be 'fully handled'.
+# It is intended only to illustrate a few techniques described in
+# the KICKS KooKbooK '251' series of recipes available from
+# http://www.kicksfortso.com/KICKS/KooKbooK/KooKbooK.htm
+ 
+# © Copyright 2010, Michael Noel, All Rights Reserved.
+ 
+# set the userid, password, and terminal id
+set who "st01"                        ;# tso userid
+set what "st01"                             ;# tso password
+set where "0C0"                         ;# CUU for terminal
+ 
+# suppress terminal output to our screen
+log_user 1               ;# if you want to see what it does
+ 
+# spawn c3270 (uses special keymap to accomplish 'attn' function)
+spawn c3270 172.17.0.2:3270
+ 
+# send an ATTN (wakes up hung screen, put netsol on it)
+#sleep 1; send "\001"; send "0"
+ 
+# see if we got a netsol screen
+set timeout 30
+expect {
+ "current system (yes or no)?"          { set which firstipl }
+ timeout                                { set which timeout }
+ }
+ 
+# if timeout die
+if { $which == "timeout" } {
+ send_user "$where not at 1st IPL \n"
+ exit
+ }
+ 
+# at 1stipl so yes, we do want to run
+sleep 1; send "yes"; send "\015"
+
+# see what happened to the ipl rqst
+expect {
+ "otherwise re-IPL now."             { set which needok }
+ timeout                             { set which timeout }
+ }
+ 
+# if timeout die
+if { $which == "timeout" } {
+ send_user "IPL failed\n"
+ exit
+ }
+ 
+# Wants further perms because of time so give it
+if { $which == "needok"} {
+ sleep 1; send "OK"; send "\015"
+ }
+
+# Wants reason for reload send any old rubbish
+expect {
+ "Enter initials and reason for reloading:"  { set which needok }
+ timeout                                     { set which timeout }
+ }
+ 
+# if timeout die
+if { $which == "timeout" } {
+ send_user "Didnt enter reload reason\n"
+ exit
+ }
+ 
+# Now wants reason for reloading
+sleep 1; send "SH WIBBLE"; send "\015"
+ 
+# Wants a cancel after checking offline devices
+expect {
+ "Post-IPL system successfully loaded."      { set which needcancel }
+ timeout                                     { set which timeout }
+ }
+ 
+# if timeout die
+if { $which == "timeout" } {
+ send_user "Didnt get to cancel point\n"
+ exit
+ }
+ 
+# Send a PA2 (c3270 sez ctrl-a 2
+sleep 1; send "\001"; send "2"
+
+# Should bve able to load HASP now
+expect {
+ "PEEK initialization complete"             { set which loadhasp }
+ timeout                                    { set which timeout }
+}
+
+# if timeout die
+if { $which == "timeout" } {
+ send_user "Didn't get to HASP load point\n"
+ exit
+ }
+ 
+
+# Now can load HASP
+sleep 1; send "hasp"; send "\015"
+ 
+# Should be able to start HASP now
+expect {
+ "Enter HASP requests"             { set which starthasp }
+ timeout                                    { set which timeout }
+}
+
+# if timeout die
+if { $which == "timeout" } {
+ send_user "Didn't get to HASP load point\n"
+ exit
+ }
+ 
+
+# Now can start HASP
+sleep 1; send "mts *hsp"; send "\015"
+
+# Should be able to load HASP now
+expect {
+ "MTS HASP START (17 January 2012)"             { set which startlas }
+ timeout                                    { set which timeout }
+}
+
+# if timeout die
+if { $which == "timeout" } {
+ send_user "Didn't get to running LAS point\n"
+ exit
+ }
+
+# Now can run LAS
+sleep 1; send "mts *las"; send "\015"
+
+
+# Should be able to release execution now
+expect {
+ "Telnet (TLNT) connections."             { set which releaseex }
+ timeout                                    { set which timeout }
+}
+
+# if timeout die
+if { $which == "timeout" } {
+ send_user "Didn't get to release ex point\n"
+ exit
+ }
+ 
+
+# Now can release execution of batch jobs
+sleep 1; send "\$release ex"; send "\015"
+
+expect "c3270>" { sleep 1; send "quit\n"; }
