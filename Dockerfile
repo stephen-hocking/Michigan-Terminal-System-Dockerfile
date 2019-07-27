@@ -1,13 +1,21 @@
 FROM	ubuntu:18.04
 
 RUN	apt-get update && \
-      apt-get install -y  unzip wget hercules mc screen && \
+      apt-get install -y apt-utils tzdata && \
+      TERM=xterm TZ=Australia/Sydney apt-get install -y  coreutils unzip wget hercules mc nmap screen iproute2 net-tools c3270 expect && \
       cd /opt && \
       mkdir hercules && \
       cd hercules && \
-      wget --no-check-certificate 'https://drive.google.com/uc?authuser=0&id=0B4t_NX-QeWDYN2QwMGU4NWMtMTRiYS00ZTc5LWIyOWUtNTg0YjQyOWIxY2I4&export=download' -O d6.0A.zip && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/d6.0A.zip-aa && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/d6.0A.zip-ab && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/d6.0A.zip-ac && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/d6.0A.zip-ad && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/d6.0A.zip-ae && \
+      cat d6.0A.zip-* > d6.0A.zip && \
       unzip d6.0A.zip && \
-      rm d6.0A.zip && \
+      rm d6.0A.zip* && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/mts-expect && \
+      chmod 777 mts-expect && \
       wget -nd http://bitsavers.org/bits/univOfMichigan/mts/d6.0.tar.gz && \
       tar zxf d6.0.tar.gz && \
       rm -f d6.0.tar.gz && \
@@ -46,18 +54,23 @@ RUN	apt-get update && \
       echo "0187   3420   Tapes/d6.0t4.aws   ro" >> hercules.cnf && \
       echo "0188   3420   Tapes/d6.0t5.aws   ro" >> hercules.cnf && \
       echo "0189   3420   Tapes/d6.0t6.aws   ro" >> hercules.cnf && \
-      echo "018A 3420 Tapes/cmd001.aws" >> hercules.cnf && \
+      echo "018A   3420   Tapes/cmd001.aws" >> hercules.cnf && \
       echo "0260   3380   Disks/mts600.dsk sf=Disks/mts600_*.dsk" >> hercules.cnf && \
       apt-get -y autoclean && apt-get -y autoremove && \
+      echo > Units/PCH1.txt && \
       echo '#!/bin/bash' > start_mts.sh && \
       echo "cd /opt/hercules/mts/d6.0A"  >> start_mts.sh && \
       echo "/usr/bin/screen -dm -S herc hercules -f hercules.cnf"  >> start_mts.sh && \
+      echo 'nohup $(while :; do ncat -c "cat Units/PCH1.txt; > Units/PCH1.txt" -l 3525 ; done) &' >> start_mts.sh && \
       echo "/bin/bash -i" >> start_mts.sh && \
       chmod 755 start_mts.sh && \
+      echo "sh /opt/hercules/mts-expect &" > hercules.rc && \
+      echo "pause 1" >> hercules.rc && \
+      echo "ipl 260" >> hercules.rc && \
       apt-get -y purge $(dpkg --get-selections | grep deinstall | sed s/deinstall//g) && \
       rm -rf /var/lib/apt/lists/*
 
-EXPOSE      1403 3270 3505 8038
+EXPOSE      1403 3270 3505 3525 8038
 WORKDIR     /opt/hercules/mts/d6.0A
 ENTRYPOINT  ["/opt/hercules/mts/d6.0A/start_mts.sh"]
 #ENTRYPOINT ["/bin/bash"]
