@@ -1,27 +1,12 @@
 #!/usr/bin/expect -f
  
-# Example of using expect & c3270 to start, run, and finish a tso
-# session on on Phil Robert's mvs tur(n)key 3 update system, from
-# http://www.4shared.com/file/141518509/36ad5bbe/tk3upd.html
- 
-# NOTE WELL that this script does not 'handle' all cases, and
-# that even the ones it does may not be 'fully handled'.
-# It is intended only to illustrate a few techniques described in
-# the KICKS KooKbooK '251' series of recipes available from
-# http://www.kicksfortso.com/KICKS/KooKbooK/KooKbooK.htm
- 
-# © Copyright 2010, Michael Noel, All Rights Reserved.
- 
-# set the userid, password, and terminal id
-set who "st01"                        ;# tso userid
-set what "st01"                             ;# tso password
-set where "0C0"                         ;# CUU for terminal
+# Example of using expect & c3270 to start an MTS instance
  
 # suppress terminal output to our screen
 log_user 1               ;# if you want to see what it does
  
 # spawn c3270 (uses special keymap to accomplish 'attn' function)
-spawn c3270 172.17.0.2:3270
+spawn c3270 localhost:3270
  
 # send an ATTN (wakes up hung screen, put netsol on it)
 #sleep 1; send "\001"; send "0"
