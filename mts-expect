@@ -8,10 +8,7 @@ log_user 1               ;# if you want to see what it does
 # spawn c3270 (uses special keymap to accomplish 'attn' function)
 spawn c3270 localhost:3270
  
-# send an ATTN (wakes up hung screen, put netsol on it)
-#sleep 1; send "\001"; send "0"
- 
-# see if we got a netsol screen
+# see if we got a confirmation that we want to IPL
 set timeout 120
 match_max 10000
 expect {
