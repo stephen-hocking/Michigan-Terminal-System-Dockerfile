@@ -1,6 +1,6 @@
 # Michigan Terminal System Running in a Docker Container
 
-This is my 1st cut at getting MTS running in a container. It should boot to a stage where jobs can be submiited to the card reader, output received from the printer, and files copied out via the card punch. 
+This is my 1st cut at getting MTS running in a container. It should boot to a stage where jobs can be submiited to the card reader, terminals attached and used to log in, output received from the printer, and files copied out via the card punch. 
 
 The following network ports are exposed:
 
