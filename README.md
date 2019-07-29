@@ -1,6 +1,6 @@
 # Michigan Terminal System Running in a Docker Container
 
-This is my 1st cut at getting MTS running in a container. There is still too much manual intervention needed before the container can be used for something useful, but it does work.
+This is my 1st cut at getting MTS running in a container. It should boot to a stage where jobs can be submiited to the card reader, output received from the printer, and files copied out via the card punch. 
 
 The following network ports are exposed:
 
@@ -14,7 +14,7 @@ You will need access to netcat or an equivalent program.
 
 To get it running, do the following:
 
-* docker run -dit mts-3090 
+* docker run -dit shocking/mts-3090 
 
 
 To access printer output, fire up an instance of `netcat` pointed at port 1403 on  the IP address of the container. This will echo whatever's printed. Redirect it to a file as required, if you wish to save the contents.
