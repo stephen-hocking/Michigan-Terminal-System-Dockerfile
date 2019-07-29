@@ -12,7 +12,8 @@ spawn c3270 localhost:3270
 #sleep 1; send "\001"; send "0"
  
 # see if we got a netsol screen
-set timeout 60
+set timeout 120
+match_max 10000
 expect {
  "current system (yes or no)?"          { set which firstipl }
  timeout                                { set which timeout }
