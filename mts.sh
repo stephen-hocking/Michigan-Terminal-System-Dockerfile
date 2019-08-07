@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #
-MTS_HOST=${MTS_HOST:-172.12.0.2}
+MTS_HOST=${MTS_HOST:-172.17.0.2}
 MTS_USER=${MTS_USER:-st01}
 MTS_PASSWORD=${MTS_PASSWORD:-st01}
 MTS_PRINTER_PORT=${MTS_PRINTER_PORT:-1403}
@@ -95,7 +95,7 @@ function begin_job ()
 {
     CARDNUM=`gen_card_number`
     echo "\                " $CARDNUM "              DECK                             199999 ."  > $BATCH_FILE
-    echo '$signon ' "$MTS_USER TIME=1000" >> $BATCH_FILE
+    echo '$signon ' "$MTS_USER CROUTE=CNTR TIME=100 " >> $BATCH_FILE
     echo "$MTS_PASSWORD" >> $BATCH_FILE
 }
 
@@ -146,8 +146,9 @@ case "$PROG" in
 	end_job
 	;;
     *)
-	echo "Dunno what you want"
-	exit 1
+	begin_job
+	cut -c 1-80 $1 >> $BATCH_FILE
+	end_job
 	;;
 esac
 
