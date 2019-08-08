@@ -5,7 +5,7 @@
  
 log_user 1               ;# if you want to see what it does
 spawn c3270 localhost:3270
-set timeout 30
+set timeout 120
 set initialcount 0
 while { 1 } {
    expect {
