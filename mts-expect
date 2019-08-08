@@ -1,139 +1,68 @@
 #!/usr/bin/expect -f
+#
+# Brings up MTS system from initial IPL
+# 
  
-# Example of using expect & c3270 to start an MTS instance
- 
-# suppress terminal output to our screen
 log_user 1               ;# if you want to see what it does
- 
-# spawn c3270 (uses special keymap to accomplish 'attn' function)
 spawn c3270 localhost:3270
- 
-# see if we got a confirmation that we want to IPL
-set timeout 120
-match_max 10000
-expect {
- "current system (yes or no)?"          { set which firstipl }
- timeout                                { set which timeout }
- }
- 
-# if timeout die
-if { $which == "timeout" } {
- send_user "$where not at 1st IPL \n"
- exit
- }
- 
-# at 1stipl so yes, we do want to run
-sleep 1; send "yes"; send "\015"
+set timeout 30
+while { 1 } {
+   expect {
+      "current system (yes or no)?"               { set which firstipl }
+      "otherwise re-IPL now."                     { set which needok }
+      "Enter initials and reason for reloading:"  { set which needinitial }
+      "Post-IPL system successfully loaded."      { set which needcancel }
+      "PEEK initialization complete"              { set which loadhasp }
+      "Enter HASP requests"                       { set which starthasp }
+      "MTS HASP START (17 January 2012)"          { set which startlas }
+      "Telnet (TLNT) connections."                { set which releaseex }
+      timeout                                     { set which timeout }
+   }
 
-# see what happened to the ipl rqst
-expect {
- "otherwise re-IPL now."             { set which needok }
- timeout                             { set which timeout }
- }
- 
-# if timeout die
-if { $which == "timeout" } {
- send_user "IPL failed\n"
- exit
- }
- 
-# Wants further perms because of time so give it
-if { $which == "needok"} {
- sleep 1; send "OK"; send "\015"
- }
-
-# Wants reason for reload send any old rubbish
-expect {
- "Enter initials and reason for reloading:"  { set which needok }
- timeout                                     { set which timeout }
- }
- 
-# if timeout die
-if { $which == "timeout" } {
- send_user "Didnt enter reload reason\n"
- exit
- }
- 
-# Now wants reason for reloading
-sleep 1; send "SH WIBBLE"; send "\015"
- 
-# Wants a cancel after checking offline devices
-expect {
- "Post-IPL system successfully loaded."      { set which needcancel }
- timeout                                     { set which timeout }
- }
- 
-# if timeout die
-if { $which == "timeout" } {
- send_user "Didnt get to cancel point\n"
- exit
- }
- 
-# Send a PA2 (c3270 sez ctrl-a 2
-sleep 1; send "\001"; send "2"
-
-# Should bve able to load HASP now
-expect {
- "PEEK initialization complete"             { set which loadhasp }
- timeout                                    { set which timeout }
+   if { $which == "firstipl" } {
+      sleep 1;
+      send "yes";
+      send "\015"
+   }
+   if { $which == "needok"} {
+      sleep 1;
+      send "OK";
+      send "\015"
+   }
+   if { $which == "needinitial" } {
+      sleep 1;
+      send "SH WIBBLE";
+      send "\015"
+   }
+   if { $which == "needcancel" } {
+      sleep 1;
+      send "\001";
+      send "2"
+   }
+   if { $which == "loadhasp" } {
+      sleep 1;
+      send "hasp";
+      send "\015"
+   }
+   if { $which == "starthasp" } {
+      sleep 1;
+      send "mts *hsp";
+      send "\015"
+   }
+   if { $which == "startlas" } {
+      sleep 1;
+      send "mts *las";
+      send "\015"
+   }
+   if { $which == "releaseex" } {
+      sleep 1;
+      send "\$release ex";
+      send "\015"
+      break
+   }
+   if { $which == "timeout" } {
+      send_user "Didn't get to release ex point\n"
+      exit
+   }
 }
-
-# if timeout die
-if { $which == "timeout" } {
- send_user "Didn't get to HASP load point\n"
- exit
- }
- 
-
-# Now can load HASP
-sleep 1; send "hasp"; send "\015"
- 
-# Should be able to start HASP now
-expect {
- "Enter HASP requests"             { set which starthasp }
- timeout                                    { set which timeout }
-}
-
-# if timeout die
-if { $which == "timeout" } {
- send_user "Didn't get to HASP load point\n"
- exit
- }
- 
-
-# Now can start HASP
-sleep 1; send "mts *hsp"; send "\015"
-
-# Should be able to load HASP now
-expect {
- "MTS HASP START (17 January 2012)"             { set which startlas }
- timeout                                    { set which timeout }
-}
-
-# if timeout die
-if { $which == "timeout" } {
- send_user "Didn't get to running LAS point\n"
- exit
- }
-
-# Now can run LAS
-sleep 1; send "mts *las"; send "\015"
-
-
-# Should be able to release execution now
-expect {
- "Telnet (TLNT) connections."             { set which releaseex }
- timeout                                    { set which timeout }
-}
-
-# if timeout die
-if { $which == "timeout" } {
- send_user "Didn't get to release ex point\n"
- exit
- }
- 
-
-# Now can release execution of batch jobs
-sleep 1; send "\$release ex"; send "\015"
-
 expect "c3270>" { sleep 1; send "quit\n"; }
