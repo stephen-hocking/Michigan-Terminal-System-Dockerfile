@@ -6,6 +6,7 @@
 log_user 1               ;# if you want to see what it does
 spawn c3270 localhost:3270
 set timeout 30
+set initialcount 0
 while { 1 } {
    expect {
       "current system (yes or no)?"               { set which firstipl }
@@ -30,9 +31,12 @@ while { 1 } {
       send "\015"
    }
    if { $which == "needinitial" } {
-      sleep 1;
-      send "SH WIBBLE";
-      send "\015"
+      if { $initialcount == 0 } {
+         set initialcount 1;
+         sleep 1;
+         send "SH WIBBLE";
+         send "\015"
+      }
    }
    if { $which == "needcancel" } {
       sleep 1;
