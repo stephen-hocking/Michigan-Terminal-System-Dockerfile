@@ -14,6 +14,7 @@ while { 1 } {
       "Enter initials and reason for reloading:"  { set which needinitial }
       "Post-IPL system successfully loaded."      { set which needcancel }
       "PEEK initialization complete"              { set which loadhasp }
+      "Job name too long"                         { set which loadhasp }
       "Enter HASP requests"                       { set which starthasp }
       "MTS HASP START (17 January 2012)"          { set which startlas }
       "Telnet (TLNT) connections."                { set which releaseex }
