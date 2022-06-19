@@ -18,7 +18,7 @@ while { 1 } {
       "Enter HASP requests"                       { set which starthasp }
       "MTS HASP START (17 January 2012)"          { set which startlas }
       "Telnet (TLNT) connections."                { set which releaseex }
-      timeout                                     { set which timeout }
+      timeout                                     { incr initialcount }
    }
 
    if { $which == "firstipl" } {
@@ -65,7 +65,7 @@ while { 1 } {
       send "\015"
       break
    }
-   if { $which == "timeout" } {
+   if { $initialcount > 10 } {
       send_user "Didn't get to release ex point\n"
       exit
    }
