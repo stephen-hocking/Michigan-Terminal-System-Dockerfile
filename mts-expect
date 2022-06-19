@@ -7,7 +7,9 @@ log_user 1               ;# if you want to see what it does
 spawn c3270 localhost:3270
 set timeout 120
 set initialcount 0
+set tmoutcnt 0
 while { 1 } {
+
    expect {
       "current system (yes or no)?"               { set which firstipl }
       "otherwise re-IPL now."                     { set which needok }
@@ -18,7 +20,7 @@ while { 1 } {
       "Enter HASP requests"                       { set which starthasp }
       "MTS HASP START (17 January 2012)"          { set which startlas }
       "Telnet (TLNT) connections."                { set which releaseex }
-      timeout                                     { incr initialcount }
+      timeout                                     { incr tmoutcnt }
    }
 
    if { $which == "firstipl" } {
@@ -35,7 +37,7 @@ while { 1 } {
       if { $initialcount == 0 } {
          set initialcount 1;
          sleep 1;
-         send "SH WIBBLE";
+         send "SH";
          send "\015"
       }
    }
@@ -45,7 +47,7 @@ while { 1 } {
       send "2"
    }
    if { $which == "loadhasp" } {
-      sleep 1;
+      sleep 2;
       send "hasp";
       send "\015"
    }
@@ -65,7 +67,7 @@ while { 1 } {
       send "\015"
       break
    }
-   if { $initialcount > 10 } {
+   if { $tmoutcnt > 10 } {
       send_user "Didn't get to release ex point\n"
       exit
    }
