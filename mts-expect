@@ -9,7 +9,6 @@ set timeout 120
 set initialcount 0
 set tmoutcnt 0
 while { 1 } {
-
    expect {
       "current system (yes or no)?"               { set which firstipl }
       "otherwise re-IPL now."                     { set which needok }
