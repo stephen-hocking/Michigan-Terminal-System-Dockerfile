@@ -1,8 +1,8 @@
-FROM	ubuntu:18.04
+FROM	ubuntu:22.04
 
 RUN	apt-get update && \
       apt-get install -y apt-utils tzdata && \
-      TERM=xterm TZ=Australia/Sydney apt-get install -y  coreutils unzip wget hercules mc nmap screen iproute2 net-tools c3270 expect && \
+      TERM=xterm TZ=Australia/Sydney apt-get install -y  coreutils unzip wget hercules mc ncat screen iproute2 net-tools c3270 expect && \
       cd /opt && \
       mkdir hercules && \
       cd hercules && \

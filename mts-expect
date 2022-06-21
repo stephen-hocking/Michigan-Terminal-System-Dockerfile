@@ -5,7 +5,7 @@
  
 log_user 1               ;# if you want to see what it does
 spawn c3270 localhost:3270
-set timeout 120
+set timeout 60
 set initialcount 0
 set tmoutcnt 0
 while { 1 } {
@@ -24,20 +24,17 @@ while { 1 } {
 
    if { $which == "firstipl" } {
       sleep 1;
-      send "yes";
-      send "\015"
+      send "yes\015";
    }
    if { $which == "needok"} {
       sleep 1;
-      send "OK";
-      send "\015"
+      send "OK\015";
    }
    if { $which == "needinitial" } {
       if { $initialcount == 0 } {
          set initialcount 1;
          sleep 1;
-         send "SH";
-         send "\015"
+         send "SH\015";
       }
    }
    if { $which == "needcancel" } {
@@ -47,8 +44,7 @@ while { 1 } {
    }
    if { $which == "loadhasp" } {
       sleep 2;
-      send "hasp";
-      send "\015"
+      send "hasp\015";
    }
    if { $which == "starthasp" } {
       sleep 1;
