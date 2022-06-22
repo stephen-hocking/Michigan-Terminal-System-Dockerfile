@@ -60,7 +60,7 @@ RUN	apt-get update && \
       echo > Units/PCH1.txt && \
       echo '#!/bin/bash' > start_mts.sh && \
       echo "cd /opt/hercules/mts/d6.0A"  >> start_mts.sh && \
-      echo "/usr/bin/screen  -c ./screenrc -dm -S herc hercules -f hercules.cnf"  >> start_mts.sh && \
+      echo "/usr/bin/screen -dm -S herc hercules -f hercules.cnf"  >> start_mts.sh && \
       echo 'nohup $(while :; do ncat -c "cat Units/PCH1.txt; > Units/PCH1.txt" -l 3525 ; done) &' >> start_mts.sh && \
       echo "/bin/bash -i" >> start_mts.sh && \
       chmod 755 start_mts.sh && \
