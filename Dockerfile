@@ -1,8 +1,8 @@
-FROM	ubuntu:22.04
+FROM	ubuntu:18.04
 
 RUN	apt-get update && \
       apt-get install -y apt-utils tzdata && \
-      TERM=xterm TZ=Australia/Sydney apt-get install -y  coreutils unzip wget hercules mc ncat screen iproute2 net-tools c3270 expect && \
+      TERM=xterm TZ=Australia/Sydney apt-get install -y  coreutils unzip wget hercules mc nmap screen iproute2 net-tools c3270 expect && \
       cd /opt && \
       mkdir hercules && \
       cd hercules && \
@@ -28,7 +28,9 @@ RUN	apt-get update && \
       echo "CPUVERID  FF" >> hercules.cnf && \
       echo "MAINSIZE  128" >> hercules.cnf && \
       echo "XPNDSIZE 0 " >> hercules.cnf && \
-      echo "HTTPPORT 8038" >> hercules.cnf && \
+      echo "HTTPPORT 8038 NOAUTH" >> hercules.cnf && \
+      echo 'HTTP ROOT "/usr/share/hercules"' >> hercules.cnf && \
+      echo "HTTPSTART" >> hercules.cnf && \
       echo "NUMCPU   1 " >> hercules.cnf && \
       echo "MAXCPU   1" >> hercules.cnf && \
       echo "SYSEPOCH 1900" >> hercules.cnf && \
@@ -58,9 +60,11 @@ RUN	apt-get update && \
       echo "0260   3380   Disks/mts600.dsk sf=Disks/mts600_*.dsk" >> hercules.cnf && \
       apt-get -y autoclean && apt-get -y autoremove && \
       echo > Units/PCH1.txt && \
+      echo "log on" > screenrc && \
+      echo "deflog on" >> screenrc && \
       echo '#!/bin/bash' > start_mts.sh && \
       echo "cd /opt/hercules/mts/d6.0A"  >> start_mts.sh && \
-      echo "/usr/bin/screen -dm -S herc hercules -f hercules.cnf"  >> start_mts.sh && \
+      echo "/usr/bin/screen  -c ./screenrc -dm -S herc hercules -f hercules.cnf"  >> start_mts.sh && \
       echo 'nohup $(while :; do ncat -c "cat Units/PCH1.txt; > Units/PCH1.txt" -l 3525 ; done) &' >> start_mts.sh && \
       echo "/bin/bash -i" >> start_mts.sh && \
       chmod 755 start_mts.sh && \
