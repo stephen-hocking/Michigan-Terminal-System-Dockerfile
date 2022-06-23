@@ -37,3 +37,5 @@ Depending on how it is invoked, it will act in the following ways:
 * Invoked as anything else, it requires one argument, which is the name of a file containing a job deck.
 
 The definitive reference can be found at [https://try-mts.com/why-try-mts/]() 
+The latest container can be found at the docker hub https://hub.docker.com/repository/docker/shocking/mts-3090
+
