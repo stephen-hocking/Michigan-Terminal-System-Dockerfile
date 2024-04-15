@@ -20,6 +20,12 @@ RUN	apt-get update && \
       tar zxf d6.0.tar.gz && \
       rm -f d6.0.tar.gz && \
       mv mts/d6.0/*.aws mts/d6.0/*.txt mts/d6.0A/Tapes && \
+      wget -nd http://bitsavers.org/bits/univOfMichigan/mts/d5.0.tar.gz && \
+      tar zxf d5.0.tar.gz && \
+      rm -f d5.0.tar.gz && \
+      mv mts/d5.0/d5.0t1.aws mts/d5.0/d5.0t2.aws mts/d6.0A/Tapes && \
+      wget -nd https://raw.githubusercontent.com/stephen-hocking/Michigan-Terminal-System-Dockerfile/master/install_apl.txt && \
+      mv install_apl.txt mts/d6.0A/Units/RDR1.txt && \
       cd mts/d6.0A && \
       echo "ARCHMODE  ESA/390" > hercules.cnf && \ 
       echo "CODEPAGE  819/037" >> hercules.cnf && \
@@ -55,6 +61,8 @@ RUN	apt-get update && \
       echo "0188   3420   Tapes/d6.0t5.aws   ro" >> hercules.cnf && \
       echo "0189   3420   Tapes/d6.0t6.aws   ro" >> hercules.cnf && \
       echo "018A   3420   Tapes/cmd001.aws" >> hercules.cnf && \
+      echo "018B   3420   Tapes/d5.0t1.aws   ro" >> hercules.cnf && \
+      echo "018C   3420   Tapes/d5.0t2.aws   ro" >> hercules.cnf && \
       echo "0260   3380   Disks/mts600.dsk sf=Disks/mts600_*.dsk" >> hercules.cnf && \
       apt-get -y autoclean && apt-get -y autoremove && \
       echo > Units/PCH1.txt && \
